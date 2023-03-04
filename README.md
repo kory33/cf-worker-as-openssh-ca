@@ -1,2 +1,3 @@
-# cf-worker-jwt-to-short-lived-certificate
-Turning Cloudflare Workers into a Certificate Authority that verifies JWTs and issues short-lived certificates.
+# `cf-worker-as-ca`
+
+Turning Cloudflare Workers into a Certificate Authority that verifies incoming requests and issues short-lived certificates.

@@ -4,14 +4,14 @@
   "description": "Turning Cloudflare Workers into a Certificate Authority that verifies JWTs and issues short-lived certificates.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate.git"
+    "url": "git+https://github.com/kory33/cf-worker-as-ca.git"
   },
   "author": "kory33",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate/issues"
+    "url": "https://github.com/kory33/cf-worker-as-ca/issues"
   },
-  "homepage": "https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate#readme",
+  "homepage": "https://github.com/kory33/cf-worker-as-ca#readme",
 
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
