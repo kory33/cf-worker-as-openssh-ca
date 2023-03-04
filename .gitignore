@@ -1,0 +1,2 @@
+signer/node_modules/**
+verifier/remote-jwt/node_modules/**

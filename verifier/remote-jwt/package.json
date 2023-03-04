@@ -1,0 +1,27 @@
+{
+  "name": "verifier-remote-jwt",
+  "version": "0.1.0",
+  "description": "Turning Cloudflare Workers into a Certificate Authority that verifies JWTs and issues short-lived certificates.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate.git"
+  },
+  "author": "kory33",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate/issues"
+  },
+  "homepage": "https://github.com/kory33/cf-worker-jwt-to-short-lived-certificate#readme",
+
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230228.0",
+    "typescript": "^4.9.5",
+    "vitest": "^0.29.2",
+    "wrangler": "2.12.0"
+  },
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "wrangler publish",
+    "test": "vitest"
+  }
+}
