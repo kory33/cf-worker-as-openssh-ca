@@ -20,14 +20,10 @@ export interface Env {
 	/**
 	 * The Service that is able to verify a request and return a list of principals.
 	 * 
-	 * The service bound to this variable MUST:
-	 * 
-	 * - return a 200 response
-	 *   - whenever the service deems that the request is successfully authenticated
-	 *   - with the response body containing a single line of comma-separated nonempty list
-	 *     of "principal names" (in character range [a-zA-Z0-9_-]) for which the request is valid
-	 * - return a 401 response
-	 *   - whenever the service deems that the request does not qualify for any principal
+	 * The service bound to this variable MUST return a 200 response with a JSON body
+	 * that contains a single array containing the "principal names" for which
+	 * the request is valid. If the request cannot be authenticated, an empty array MUST
+	 * be returned.
 	 */
 	AUTHENTICATOR_SERVICE: Fetcher;
 }
