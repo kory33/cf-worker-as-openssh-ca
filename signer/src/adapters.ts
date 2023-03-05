@@ -10,11 +10,11 @@ function generatorFrom(env: Env): SSHKeyPairGenerator {
   throw "TODO: not implemented."
 }
 
-function keyPairStoreFrom(env: KVNamespace): AuthoritySSHKeyPairStore {
+function keyPairStoreFrom(signing: KVNamespace): AuthoritySSHKeyPairStore {
   throw "TODO: not implemented."
 }
 
-function principalsAuthenticatorFrom(env: Fetcher): PrincipalsAuthenticator<Request> {
+function principalsAuthenticatorFrom(authenticatorService: Fetcher): PrincipalsAuthenticator<Request> {
   throw "TODO: not implemented."
 }
 
@@ -29,7 +29,7 @@ export function adapt(env: Env): AdaptedEntities {
   return ({
     signer: signerFrom(env),
     keyPairGenerator: generatorFrom(env),
-    keyPairStore: keyPairStoreFrom(env.SIGNING_CERT_KV_NAMESPACE),
+    keyPairStore: keyPairStoreFrom(env.SIGNING_KEY_PAIR_NAMESPACE),
     authenticator: principalsAuthenticatorFrom(env.AUTHENTICATOR_SERVICE),
   });
 }

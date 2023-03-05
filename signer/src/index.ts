@@ -13,9 +13,9 @@ import * as routes from "./routes";
 
 export interface Env {
 	/**
-	 * The KV namespace in which a signing certificate should be stored.
+	 * The KV namespace in which a signing key pair should be stored.
 	 */
-	SIGNING_CERT_KV_NAMESPACE: KVNamespace;
+	SIGNING_KEY_PAIR_NAMESPACE: KVNamespace;
 
 	/**
 	 * The Service that is able to verify a request and return a list of principals.
