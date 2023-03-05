@@ -1,14 +1,18 @@
-import { Fetcher, KVNamespace, Request } from "@cloudflare/workers-types";
+import { crypto, CryptoKeyPair, Fetcher, KVNamespace, Request } from "@cloudflare/workers-types";
 import { Env } from ".";
-import { AuthoritySSHKeyPairStore, SSHKeyPairGenerator, PrincipalsAuthenticator, Signer, Principals, SSHKeyPair } from "./models";
+import { AuthoritySSHKeyPairStore, SSHKeyPairGenerator, PrincipalsAuthenticator, Signer, Principals, SSHKeyPair, Certificate, PublicSSHKey } from "./models";
 
-function signerFrom(env: Env): Signer {
-  throw "TODO: not implemented."
-}
+const signerFrom = (env: Env): Signer => ({
+  signShortLived: async (targetKey: PublicSSHKey, authorityKeyPair: SSHKeyPair, principals: Principals): Promise<Certificate> => {
+    throw "TODO: Not implemented!";
+  }
+});
 
-function generatorFrom(env: Env): SSHKeyPairGenerator {
-  throw "TODO: not implemented."
-}
+const generatorFrom = (env: Env): SSHKeyPairGenerator => ({
+  secureGenerate: async (): Promise<SSHKeyPair> => {
+    throw "TODO: Not implemented!";
+  }
+})
 
 function keyPairStoreFrom(signingKeyPairNamespace: KVNamespace): AuthoritySSHKeyPairStore {
   const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"
