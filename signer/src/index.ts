@@ -1,4 +1,5 @@
-import { ExecutionContext, Request, Response } from "@cloudflare/workers-types";
+import { ExecutionContext, Fetcher, KVNamespace, Request, Response } from "@cloudflare/workers-types";
+import * as routes from "./routes";
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
@@ -11,17 +12,24 @@ import { ExecutionContext, Request, Response } from "@cloudflare/workers-types";
  */
 
 export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
+	/**
+	 * The KV namespace in which a signing certificate should be stored.
+	 */
+	SIGNING_CERT_KV_NAMESPACE: KVNamespace;
+
+	/**
+	 * The Service that is able to verify a request and return a list of principals.
+	 * 
+	 * The service bound to this variable MUST:
+	 * 
+	 * - return a 200 response
+	 *   - whenever the service deems that the request is successfully authenticated
+	 *   - with the response body containing a single line of comma-separated nonempty list
+	 *     of "principal names" (in character range [a-zA-Z0-9_-]) for which the request is valid
+	 * - return a 401 response
+	 *   - whenever the service deems that the request does not qualify for any principal
+	 */
+	AUTHENTICATOR_SERVICE: Fetcher;
 }
 
 export default {
@@ -30,6 +38,14 @@ export default {
 		env: Env,
 		ctx: ExecutionContext
 	): Promise<Response> {
-		return new Response("Hello World!");
+		const url = new URL(request.url);
+
+		if (request.method === "GET" && url.pathname === "/ca-public-key") {
+			return await routes.getCaPublicKey(request, env, ctx);
+		} else if (request.method === "POST" && url.pathname === "/new-short-lived-certificate") {
+			return await routes.postNewShortLivedCertificate(request, env, ctx);
+		} else {
+			return new Response(null, { status: 404 });
+		}
 	},
 };
