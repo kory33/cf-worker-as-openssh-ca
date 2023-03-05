@@ -1,28 +1,20 @@
 import { ExecutionContext, Request, Response } from "@cloudflare/workers-types";
+import * as jose from "jose";
+import * as Eta from "eta";
+
+// Environment variables
+
+/** The URL at which the public key of the signer is distributed */
+declare const JWKS_DISTRIBUTION_URL: string;
 
 /**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/index.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/index.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
+ * The Eta template string that produces
+ * a comma-separated nonempty list of principal strings
+ * when run on the JWT claim
  */
+declare const ETA_TEMPLATE_FOR_PRINCIPALS: string;
 
-export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-}
+export interface Env {}
 
 export default {
 	async fetch(
@@ -30,6 +22,19 @@ export default {
 		env: Env,
 		ctx: ExecutionContext
 	): Promise<Response> {
-		return new Response("Hello World!");
+		// We expect a header Authorization: Bearer <JWT>
+		// so immediately return an empty array if not given such a header
+		const authHeader = request.headers.get("Authorization");
+		if (authHeader === null || !authHeader.startsWith("Bearer ")) {
+			return Response.json([]);
+		}
+
+		const token = authHeader.slice("Bearer ".length);
+		const jwks = jose.createRemoteJWKSet(new URL(JWKS_DISTRIBUTION_URL));
+		const { payload } = await jose.jwtVerify(token, jwks);
+		const commaSeparatedPrincipals = Eta.render(ETA_TEMPLATE_FOR_PRINCIPALS, payload);
+		const principals = commaSeparatedPrincipals.split(",");
+
+		return Response.json(principals);
 	},
 };

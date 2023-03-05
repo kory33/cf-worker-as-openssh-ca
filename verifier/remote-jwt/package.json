@@ -12,16 +12,14 @@
     "url": "https://github.com/kory33/cf-worker-as-ca/issues"
   },
   "homepage": "https://github.com/kory33/cf-worker-as-ca#readme",
-
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
     "typescript": "^4.9.5",
-    "vitest": "^0.29.2",
     "wrangler": "2.12.0"
   },
-  "scripts": {
-    "start": "wrangler dev",
-    "deploy": "wrangler publish",
-    "test": "vitest"
+  "scripts": {},
+  "dependencies": {
+    "eta": "^2.0.1",
+    "jose": "^4.13.1"
   }
 }
