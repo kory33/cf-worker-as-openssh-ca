@@ -39,7 +39,7 @@ export async function postNewShortLivedCertificate(
 
   if (generationResult.__tag === "Success") {
     return Response.json({
-      privateKey: generationResult.privateKey.asPEMPrivateKeyString(),
+      privateKey: generationResult.privateKey.asSSHPrivateKeyFileString,
       certificate: generationResult.signedShortLivedCertificate.asBase64String(),
     }, {
       status: 200

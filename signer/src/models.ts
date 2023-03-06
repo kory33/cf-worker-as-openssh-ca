@@ -1,9 +1,11 @@
 export type PublicSSHKey = {
+  raw(): Uint8Array;
   asSSHPublicKeyString(): string;
 };
 
 export type PrivateSSHKey = {
-  asPEMPrivateKeyString(): string;
+  raw(): Uint8Array;
+  asSSHPrivateKeyFileString(): string;
 };
 
 export type SSHKeyPair = {
