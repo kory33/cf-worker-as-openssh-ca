@@ -1,4 +1,5 @@
 import { ExecutionContext, Fetcher, KVNamespace, Request, Response } from "@cloudflare/workers-types";
+import { adapt } from "./adapters";
 import * as routes from "./routes";
 
 /**
@@ -35,11 +36,12 @@ export default {
 		ctx: ExecutionContext
 	): Promise<Response> {
 		const url = new URL(request.url);
+		const adapted = adapt(env);
 
 		if (request.method === "GET" && url.pathname === "/ca-public-key") {
-			return await routes.getCaPublicKey(request, env, ctx);
+			return await routes.getCaPublicKey(request, adapted, ctx);
 		} else if (request.method === "POST" && url.pathname === "/new-short-lived-certificate") {
-			return await routes.postNewShortLivedCertificate(request, env, ctx);
+			return await routes.postNewShortLivedCertificate(request, adapted, ctx);
 		} else {
 			return new Response(null, { status: 404 });
 		}

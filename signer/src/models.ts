@@ -1,3 +1,7 @@
+export namespace KeyTypes {
+  export type ECDSA_P521 = "ECDSA-P521";
+}
+
 export type PublicKey<KeyType> = {
   readonly type: KeyType;
   raw(): Uint8Array;

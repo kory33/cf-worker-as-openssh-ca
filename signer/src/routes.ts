@@ -1,15 +1,12 @@
 import { Request, ExecutionContext, Response } from "@cloudflare/workers-types";
-import { Env } from ".";
-import { adapt } from "./adapters";
+import { AdaptedEntities } from "./adapters";
 import * as services from "./services";
 
 export async function getCaPublicKey(
 	request: Request,
-	env: Env,
+	adapted: AdaptedEntities,
 	ctx: ExecutionContext
 ): Promise<Response> {
-  const adapted = adapt(env);
-
 	const publicKey = await services.ensureKeyPairIsInRepositoryAndGetPublicKey(
     adapted.keyPairGenerator, adapted.keyPairStore
   )
@@ -25,11 +22,9 @@ export async function getCaPublicKey(
 
 export async function postNewShortLivedCertificate(
 	request: Request,
-	env: Env,
+	adapted: AdaptedEntities,
 	ctx: ExecutionContext
 ): Promise<Response> {
-  const adapted = adapt(env);
-
   const generationResult = await services.generateSignedKeyPairUsingStoredCAKeyPair(
     request.clone(),
     adapted.keyPairStore,
