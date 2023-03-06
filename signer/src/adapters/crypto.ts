@@ -1,5 +1,4 @@
-import { Env } from "..";
-import { Signer, KeyTypes, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, SSHKeyPairFormatter, PrivateKey } from "../models";
+import { Signer, KeyTypes, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, PrivateKey } from "../models";
 
 export const ecdsaP521Signer: Signer<KeyTypes.ECDSA_P521> = ({
   signShortLived: async <UserKeyType>(
@@ -17,11 +16,10 @@ export const ecdsaP521Generator: KeyPairGenerator<KeyTypes.ECDSA_P521> = ({
   }
 });
 
-export const ecdsaKeyPairFormatter: SSHKeyPairFormatter<KeyTypes.ECDSA_P521, KeyTypes.ECDSA_P521> = ({
-  inOpenSSHPublicKeyFormat: async (publicKey: PublicKey<KeyTypes.ECDSA_P521>): Promise<string> => {
-    throw "TODO: Not implemented!";
-  },
-  inOpenSSHPrivateKeyFileFormat: async (privateKey: PrivateKey<KeyTypes.ECDSA_P521>): Promise<string> => {
-    throw "TODO: Not implemented!";
-  },
-});
+export async function ecdsaP521PublicKeyToOpenSSHPublicKeyFormat(publicKey: PublicKey<KeyTypes.ECDSA_P521>): Promise<string> {
+  throw "TODO: Not implemented!";
+}
+
+export async function ecdsaP521PrivateKeyToOpenSSHPrivateKeyFileFormat(privateKey: PrivateKey<KeyTypes.ECDSA_P521>): Promise<string> {
+  throw "TODO: Not implemented!";
+}
