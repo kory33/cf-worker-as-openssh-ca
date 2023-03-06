@@ -24,7 +24,9 @@ export function principalsAuthenticatorFrom(authenticatorService: Fetcher): Prin
   })
 }
 
-export function keyPairStoreFrom(signingKeyPairNamespace: KVNamespace): AuthoritySSHKeyPairStore<KeyTypes.ECDSA_P521> {
+export function keyPairStoreFrom<KeyType extends string>(
+  keyType: KeyType, signingKeyPairNamespace: KVNamespace
+): AuthoritySSHKeyPairStore<KeyType> {
   const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"
 
   type PersistedJsonObject = {
@@ -41,23 +43,23 @@ export function keyPairStoreFrom(signingKeyPairNamespace: KVNamespace): Authorit
   }
 
   return ({
-    getStoredKeyPair: async (): Promise<KeyPair<KeyTypes.ECDSA_P521> | null> => {
+    getStoredKeyPair: async (): Promise<KeyPair<KeyType> | null> => {
       const json = await signingKeyPairNamespace.get(KEYPAIR_JSON_KEY, "json");
       if (!(isPersistedJsonObjectAsExpected(json))) {
         throw `Value found at ${KEYPAIR_JSON_KEY} does not conform to predefined schema`;
       }
       return ({
         publicKey: {
-          type: "ECDSA-P521",
+          type: keyType,
           raw: () => uint8ArrayFromBase64String(json.rawPublicKey),
         },
         privateKey: {
-          type: "ECDSA-P521",
+          type: keyType,
           raw: () => uint8ArrayFromBase64String(json.rawPrivateKey),
         },
       });
     },
-    store: async (authoritySSHKeyPair: KeyPair<KeyTypes.ECDSA_P521>): Promise<void> => {
+    store: async (authoritySSHKeyPair: KeyPair<KeyType>): Promise<void> => {
       await signingKeyPairNamespace.put(
         KEYPAIR_JSON_KEY,
         JSON.stringify({

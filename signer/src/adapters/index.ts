@@ -1,7 +1,7 @@
 import { Request } from "@cloudflare/workers-types";
 import { Env } from "..";
 import { AuthoritySSHKeyPairStore, KeyPairGenerator, PrincipalsAuthenticator, Signer, SSHKeyPairFormatter, KeyTypes } from "../models";
-import { signerFrom, generatorFrom, sshKeyPairFormatterFrom } from "./crypto";
+import { ecdsaP521Signer, ecdsaP521Generator, ecdsaKeyPairFormatter } from "./crypto";
 import { keyPairStoreFrom, principalsAuthenticatorFrom } from "./intra-cloudflare";
 
 export type AdaptedEntities = {
@@ -14,10 +14,10 @@ export type AdaptedEntities = {
 
 export function adapt(env: Env): AdaptedEntities {
   return ({
-    signer: signerFrom(env),
-    keyPairGenerator: generatorFrom(env),
-    formatter: sshKeyPairFormatterFrom(env),
-    keyPairStore: keyPairStoreFrom(env.SIGNING_KEY_PAIR_NAMESPACE),
+    signer: ecdsaP521Signer,
+    keyPairGenerator: ecdsaP521Generator,
+    formatter: ecdsaKeyPairFormatter,
+    keyPairStore: keyPairStoreFrom("ECDSA-P521", env.SIGNING_KEY_PAIR_NAMESPACE),
     authenticator: principalsAuthenticatorFrom(env.AUTHENTICATOR_SERVICE),
   });
 }
