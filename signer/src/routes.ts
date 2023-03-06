@@ -13,8 +13,9 @@ export async function getCaPublicKey(
 	const publicKey = await services.ensureKeyPairIsInRepositoryAndGetPublicKey(
     adapted.keyPairGenerator, adapted.keyPairStore
   )
+  const publicKeyInSSHFormat = await adapted.formatter.inOpenSSHPublicKeyFormat(publicKey);
 
-  return new Response(publicKey.asSSHPublicKeyString(), {
+  return new Response(publicKeyInSSHFormat, {
     status: 200,
     headers: {
       "Content-Type": "text/plain; charset=utf-8"      
@@ -38,8 +39,9 @@ export async function postNewShortLivedCertificate(
   );
 
   if (generationResult.__tag === "Success") {
+    const inOpenSSHPrivateKeyFileFormat = await adapted.formatter.inOpenSSHPrivateKeyFileFormat(generationResult.privateKey);
     return Response.json({
-      privateKey: generationResult.privateKey.asSSHPrivateKeyFileString,
+      privateKey: inOpenSSHPrivateKeyFileFormat,
       certificate: generationResult.signedShortLivedCertificate.asBase64String(),
     }, {
       status: 200

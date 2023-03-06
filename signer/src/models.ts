@@ -1,25 +1,30 @@
-export type PublicSSHKey = {
+export type PublicKey<KeyType> = {
+  readonly type: KeyType;
   raw(): Uint8Array;
-  asSSHPublicKeyString(): string;
 };
 
-export type PrivateSSHKey = {
+export type PrivateKey<KeyType> = {
+  readonly type: KeyType;
   raw(): Uint8Array;
-  asSSHPrivateKeyFileString(): string;
 };
 
-export type SSHKeyPair = {
-  readonly publicKey: PublicSSHKey;
-  readonly privateKey: PrivateSSHKey;
+export type KeyPair<KeyType> = {
+  readonly publicKey: PublicKey<KeyType>;
+  readonly privateKey: PrivateKey<KeyType>;
 };
 
-export type SSHKeyPairGenerator = {
-  secureGenerate(): Promise<SSHKeyPair>;
+export type KeyPairGenerator<KeyType> = {
+  secureGenerate(): Promise<KeyPair<KeyType>>;
 };
 
-export type AuthoritySSHKeyPairStore = {
-  getStoredKeyPair(): Promise<SSHKeyPair | null>;
-  store(authoritySSHKeyPair: SSHKeyPair): Promise<void>;
+export type SSHKeyPairFormatter<AuthorityKeyType, ClientKeyType> = {
+  inOpenSSHPublicKeyFormat(publicKey: PublicKey<AuthorityKeyType>): Promise<string>;
+  inOpenSSHPrivateKeyFileFormat(privateKey: PrivateKey<ClientKeyType>): Promise<string>;
+}
+
+export type AuthoritySSHKeyPairStore<KeyType> = {
+  getStoredKeyPair(): Promise<KeyPair<KeyType> | null>;
+  store(authoritySSHKeyPair: KeyPair<KeyType>): Promise<void>;
 };
 
 export type Principals = string[];
@@ -32,6 +37,10 @@ export type Certificate = {
   asBase64String(): string;
 };
 
-export type Signer = {
-  signShortLived(targetKey: PublicSSHKey, authorityKeyPair: SSHKeyPair, principals: Principals): Promise<Certificate>
+export type Signer<AuthorityKeyType> = {
+  signShortLived<UserKeyType>(
+    targetKey: PublicKey<UserKeyType>,
+    authorityKeyPair: KeyPair<AuthorityKeyType>,
+    principals: Principals
+  ): Promise<Certificate>
 };

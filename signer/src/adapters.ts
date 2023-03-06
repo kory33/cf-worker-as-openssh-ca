@@ -1,52 +1,73 @@
 import { crypto, CryptoKeyPair, Fetcher, KVNamespace, Request } from "@cloudflare/workers-types";
 import { Env } from ".";
-import { AuthoritySSHKeyPairStore, SSHKeyPairGenerator, PrincipalsAuthenticator, Signer, Principals, SSHKeyPair, Certificate, PublicSSHKey } from "./models";
+import { ECDSA_P521 } from "./key-types";
+import { AuthoritySSHKeyPairStore, KeyPairGenerator, PrincipalsAuthenticator, Signer, Principals, KeyPair, Certificate, PublicKey, SSHKeyPairFormatter, PrivateKey } from "./models";
+import { base64StringFromUint8Array, uint8ArrayFromBase64String } from "./nodejs-base64";
 
-const signerFrom = (env: Env): Signer => ({
-  signShortLived: async (targetKey: PublicSSHKey, authorityKeyPair: SSHKeyPair, principals: Principals): Promise<Certificate> => {
+const signerFrom = (env: Env): Signer<ECDSA_P521> => ({
+  signShortLived: async <UserKeyType>(
+    targetKey: PublicKey<UserKeyType>,
+    authorityKeyPair: KeyPair<ECDSA_P521>,
+    principals: Principals
+  ): Promise<Certificate> => {
     throw "TODO: Not implemented!";
   }
 });
 
-const generatorFrom = (env: Env): SSHKeyPairGenerator => ({
-  secureGenerate: async (): Promise<SSHKeyPair> => {
+const generatorFrom = (env: Env): KeyPairGenerator<ECDSA_P521> => ({
+  secureGenerate: async (): Promise<KeyPair<ECDSA_P521>> => {
     throw "TODO: Not implemented!";
   }
-})
+});
 
-function keyPairStoreFrom(signingKeyPairNamespace: KVNamespace): AuthoritySSHKeyPairStore {
+const sshKeyPairFormatterFrom = (env: Env): SSHKeyPairFormatter<ECDSA_P521, ECDSA_P521> => ({
+  inOpenSSHPublicKeyFormat: async (publicKey: PublicKey<ECDSA_P521>): Promise<string> => {
+    throw "TODO: Not implemented!";
+  },
+  inOpenSSHPrivateKeyFileFormat: async (privateKey: PrivateKey<ECDSA_P521>): Promise<string> => {
+    throw "TODO: Not implemented!";
+  },
+});
+
+function keyPairStoreFrom(signingKeyPairNamespace: KVNamespace): AuthoritySSHKeyPairStore<ECDSA_P521> {
   const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"
 
   type PersistedJsonObject = {
-    readonly sshPublicKeyString: string;
-    readonly sshPemPrivateKeyString: string;
+    readonly rawPublicKey: string;
+    readonly rawPrivateKey: string;
   }
 
   function isPersistedJsonObjectAsExpected(value: unknown): value is PersistedJsonObject {
     return (
       typeof value === 'object' && value !== null &&
-      "sshPublicKeyString" in value && typeof value.sshPublicKeyString === "string" &&
-      "sshPemPrivateKeyString" in value && typeof value.sshPemPrivateKeyString === "string"
+      "rawPublicKey" in value && typeof value.rawPublicKey === "string" &&
+      "rawPrivateKey" in value && typeof value.rawPrivateKey === "string"
     );
   }
 
   return ({
-    getStoredKeyPair: async (): Promise<SSHKeyPair | null> => {
+    getStoredKeyPair: async (): Promise<KeyPair<ECDSA_P521> | null> => {
       const json = await signingKeyPairNamespace.get(KEYPAIR_JSON_KEY, "json");
       if (!(isPersistedJsonObjectAsExpected(json))) {
         throw `Value found at ${KEYPAIR_JSON_KEY} does not conform to predefined schema`;
       }
       return ({
-        publicKey: { asSSHPublicKeyString: () => json.sshPublicKeyString },
-        privateKey: { asPEMPrivateKeyString: () => json.sshPemPrivateKeyString },
+        publicKey: {
+          type: "ECDSA-P521",
+          raw: () => uint8ArrayFromBase64String(json.rawPublicKey),
+        },
+        privateKey: {
+          type: "ECDSA-P521",
+          raw: () => uint8ArrayFromBase64String(json.rawPrivateKey),
+        },
       });
     },
-    store: async (authoritySSHKeyPair: SSHKeyPair): Promise<void> => {
+    store: async (authoritySSHKeyPair: KeyPair<ECDSA_P521>): Promise<void> => {
       await signingKeyPairNamespace.put(
         KEYPAIR_JSON_KEY,
         JSON.stringify({
-          sshPublicKeyString: authoritySSHKeyPair.publicKey.asSSHPublicKeyString(),
-          sshPemPrivateKeyString: authoritySSHKeyPair.privateKey.asPEMPrivateKeyString(),
+          rawPublicKey: base64StringFromUint8Array(authoritySSHKeyPair.publicKey.raw()),
+          rawPrivateKey: base64StringFromUint8Array(authoritySSHKeyPair.privateKey.raw()),
         } satisfies PersistedJsonObject)
       )
     },
@@ -76,10 +97,11 @@ function principalsAuthenticatorFrom(authenticatorService: Fetcher): PrincipalsA
 }
 
 export type AdaptedEntities = {
-  readonly signer: Signer;
-  readonly keyPairGenerator: SSHKeyPairGenerator;
-  readonly keyPairStore: AuthoritySSHKeyPairStore;
+  readonly signer: Signer<ECDSA_P521>;
+  readonly keyPairGenerator: KeyPairGenerator<ECDSA_P521>;
+  readonly keyPairStore: AuthoritySSHKeyPairStore<ECDSA_P521>;
   readonly authenticator: PrincipalsAuthenticator<Request>;
+  readonly formatter: SSHKeyPairFormatter<ECDSA_P521, ECDSA_P521>;
 };
 
 export function adapt(env: Env): AdaptedEntities {
@@ -88,5 +110,6 @@ export function adapt(env: Env): AdaptedEntities {
     keyPairGenerator: generatorFrom(env),
     keyPairStore: keyPairStoreFrom(env.SIGNING_KEY_PAIR_NAMESPACE),
     authenticator: principalsAuthenticatorFrom(env.AUTHENTICATOR_SERVICE),
+    formatter: sshKeyPairFormatterFrom(env),
   });
 }

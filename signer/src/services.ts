@@ -1,9 +1,9 @@
-import { SSHKeyPairGenerator, AuthoritySSHKeyPairStore, PublicSSHKey, PrincipalsAuthenticator, Signer, PrivateSSHKey, Certificate } from "./models";
+import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate } from "./models";
 
-export async function ensureKeyPairIsInRepositoryAndGetPublicKey(
-  generator: SSHKeyPairGenerator,
-  store: AuthoritySSHKeyPairStore
-): Promise<PublicSSHKey> {
+export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType>(
+  generator: KeyPairGenerator<KeyType>,
+  store: AuthoritySSHKeyPairStore<KeyType>
+): Promise<PublicKey<KeyType>> {
   const currentKeyPair = await store.getStoredKeyPair();
 
   if (currentKeyPair === null) {
@@ -15,9 +15,9 @@ export async function ensureKeyPairIsInRepositoryAndGetPublicKey(
   }
 }
 
-export type SignedKeyPairGenerationResult = {
+export type SignedKeyPairGenerationResult<KeyType> = {
   __tag: 'Success',
-  privateKey: PrivateSSHKey,
+  privateKey: PrivateKey<KeyType>,
   signedShortLivedCertificate: Certificate,
 } | {
   __tag: "NoCAKeyPair"
@@ -25,13 +25,13 @@ export type SignedKeyPairGenerationResult = {
   __tag: "EmptyPrincipals"
 }
 
-export async function generateSignedKeyPairUsingStoredCAKeyPair<Req>(
+export async function generateSignedKeyPairUsingStoredCAKeyPair<Req, ClientKeyType, AuthorityKeyType>(
   clonedRequest: Req,
-  store: AuthoritySSHKeyPairStore,
+  store: AuthoritySSHKeyPairStore<AuthorityKeyType>,
   authenticator: PrincipalsAuthenticator<Req>,
-  generator: SSHKeyPairGenerator,
-  signer: Signer
-): Promise<SignedKeyPairGenerationResult> {
+  generator: KeyPairGenerator<ClientKeyType>,
+  signer: Signer<AuthorityKeyType>
+): Promise<SignedKeyPairGenerationResult<ClientKeyType>> {
   const caKeyPair = await store.getStoredKeyPair();
   if (caKeyPair === null) {
     // Design decision: we want to return an error here because
