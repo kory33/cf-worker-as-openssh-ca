@@ -1,20 +1,20 @@
-import { ExecutionContext, Request, Response } from "@cloudflare/workers-types";
+import { ExecutionContext, Request, Response } from "@cloudflare/workers-types/index";
 import * as jose from "jose";
 import * as Eta from "eta";
 
-// Environment variables
+export interface Env {
+	// Environment variables
 
-/** The URL at which the public key of the signer is distributed */
-declare const JWKS_DISTRIBUTION_URL: string;
+	/** The URL at which the public key of the signer is distributed */
+	readonly JWKS_DISTRIBUTION_URL: string;
 
-/**
- * The Eta template string that produces
- * a comma-separated nonempty list of principal strings
- * when run on the JWT claim
- */
-declare const ETA_TEMPLATE_FOR_PRINCIPALS: string;
-
-export interface Env {}
+	/**
+	 * The Eta template string that produces
+	 * a comma-separated nonempty list of principal strings
+	 * when run on the JWT claim
+	 */
+	readonly ETA_TEMPLATE_FOR_PRINCIPALS: string;
+}
 
 export default {
 	async fetch(
@@ -30,9 +30,9 @@ export default {
 		}
 
 		const token = authHeader.slice("Bearer ".length);
-		const jwks = jose.createRemoteJWKSet(new URL(JWKS_DISTRIBUTION_URL));
+		const jwks = jose.createRemoteJWKSet(new URL(env.JWKS_DISTRIBUTION_URL));
 		const { payload } = await jose.jwtVerify(token, jwks);
-		const commaSeparatedPrincipals = Eta.render(ETA_TEMPLATE_FOR_PRINCIPALS, payload);
+		const commaSeparatedPrincipals = Eta.render(env.ETA_TEMPLATE_FOR_PRINCIPALS, payload);
 		const principals = commaSeparatedPrincipals.split(",");
 
 		return Response.json(principals);
