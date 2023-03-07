@@ -1,4 +1,3 @@
-import { ExecutionContext, Fetcher, KVNamespace, Request, Response } from "@cloudflare/workers-types";
 import { adapt } from "./adapters";
 import * as routes from "./routes";
 

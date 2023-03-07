@@ -1,4 +1,3 @@
-import { Request, ExecutionContext, Response } from "@cloudflare/workers-types";
 import { AdaptedEntities } from "./adapters";
 import * as services from "./services";
 
