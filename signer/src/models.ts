@@ -1,7 +1,7 @@
 import { LiteralStringOrNever } from "./typehacks";
 
-// We currently only handle ecdsa-p521 keys
-export type KeyTypes = "ECDSA-P521";
+// We currently only handle Ed25519 keys
+export type KeyTypes = "Ed25519";
 
 export type PublicKey<KeyType extends KeyTypes> = {
   readonly type: KeyType;
@@ -14,8 +14,6 @@ export type PrivateKey<KeyType extends KeyTypes> = {
 };
 
 export type KeyPair<KeyType extends KeyTypes> = {
-  // constraint: publicKey.type === privateKey.type
-
   readonly publicKey: PublicKey<LiteralStringOrNever<KeyType>>;
   readonly privateKey: PrivateKey<LiteralStringOrNever<KeyType>>;
 };
@@ -26,7 +24,7 @@ export type KeyPairGenerator<KeyType extends KeyTypes> = {
 
 export type SSHKeyPairFormatter<AuthorityKeyType extends KeyTypes, ClientKeyType extends KeyTypes> = {
   inOpenSSHPublicKeyFormat(publicKey: PublicKey<AuthorityKeyType>): Promise<string>;
-  inOpenSSHPrivateKeyFileFormat(privateKey: PrivateKey<ClientKeyType>): Promise<string>;
+  inOpenSSHPrivateKeyFileFormat(keyPair: KeyPair<ClientKeyType>): Promise<string>;
 }
 
 export type AuthoritySSHKeyPairStore<KeyType extends KeyTypes> = {
@@ -41,13 +39,25 @@ export type PrincipalsAuthenticator<Req> = {
 };
 
 export type Certificate = {
-  asBase64String(): string;
+  readonly openSSHCertificateString: string;
 };
 
 export type Signer<AuthorityKeyType extends KeyTypes> = {
-  signShortLived<UserKeyType extends KeyTypes>(
+  /**
+   * Sign the {@link targetKey} using {@link authorityKeyPair},
+   * allowing {@link principals} as principal names for the validity
+   * within the range of {@link valid_after} and {@link valid_before}.
+   * 
+   * @param valid_after
+   *  The (inclusive) start of certificate validity period, specified by Unix time.
+   * @param valid_before 
+   *  The (exclusive) end of certificate validity period, specified by Unix time.
+   */
+  signCertificate<UserKeyType extends KeyTypes>(
     targetKey: PublicKey<UserKeyType>,
     authorityKeyPair: KeyPair<AuthorityKeyType>,
-    principals: Principals
+    principals: Principals,
+    valid_after: bigint,
+    valid_before: bigint
   ): Promise<Certificate>
 };

@@ -33,10 +33,10 @@ export async function postNewShortLivedCertificate(
   );
 
   if (generationResult.__tag === "Success") {
-    const inOpenSSHPrivateKeyFileFormat = await adapted.formatter.inOpenSSHPrivateKeyFileFormat(generationResult.privateKey);
+    const inOpenSSHPrivateKeyFileFormat = await adapted.formatter.inOpenSSHPrivateKeyFileFormat(generationResult.keyPair);
     return Response.json({
       privateKey: inOpenSSHPrivateKeyFileFormat,
-      certificate: generationResult.signedShortLivedCertificate.asBase64String(),
+      certificate: generationResult.caSignedShortLivedCertificate.openSSHCertificateString,
     }, {
       status: 200
     });

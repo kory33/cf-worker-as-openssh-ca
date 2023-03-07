@@ -1,4 +1,4 @@
-import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate, KeyTypes } from "./models";
+import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate, KeyTypes, KeyPair } from "./models";
 
 export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends KeyTypes>(
   generator: KeyPairGenerator<KeyType>,
@@ -17,8 +17,8 @@ export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends
 
 export type SignedKeyPairGenerationResult<KeyType extends KeyTypes> = {
   __tag: 'Success',
-  privateKey: PrivateKey<KeyType>,
-  signedShortLivedCertificate: Certificate,
+  keyPair: KeyPair<KeyType>,
+  caSignedShortLivedCertificate: Certificate,
 } | {
   __tag: "NoCAKeyPair"
 } | {
@@ -51,11 +51,20 @@ export async function generateSignedKeyPairUsingStoredCAKeyPair<
   }
 
   const keyPair = await generator.secureGenerate();
-  const certificate = await signer.signShortLived(keyPair.publicKey, caKeyPair, principals);
+
+  const currentUnixTime: bigint = BigInt(Date.now() / 1000);
+  const tenMinutesLater: bigint = currentUnixTime + 60n * 10n;
+  const certificate = await signer.signCertificate(
+    keyPair.publicKey,
+    caKeyPair,
+    principals,
+    currentUnixTime,
+    tenMinutesLater
+  );
 
   return ({
     __tag: "Success",
-    privateKey: keyPair.privateKey,
-    signedShortLivedCertificate: certificate
+    keyPair: keyPair,
+    caSignedShortLivedCertificate: certificate
   });
 }
