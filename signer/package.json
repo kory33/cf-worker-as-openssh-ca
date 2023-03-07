@@ -15,6 +15,7 @@
 
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
+    "signer-internal-crypto-wasm": "file:./internal-crypto-wasm/pkg",
     "typescript": "^4.9.5",
     "vitest": "^0.29.2",
     "wrangler": "2.12.0"
