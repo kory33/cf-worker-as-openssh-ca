@@ -609,7 +609,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "signer-internal-wasm"
+name = "signer-internal-crypto"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",

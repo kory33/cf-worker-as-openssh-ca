@@ -1,5 +1,5 @@
 [package]
-name = "signer-internal-wasm"
+name = "signer-internal-crypto"
 version = "0.1.0"
 authors = ["kory33"]
 edition = "2018"
