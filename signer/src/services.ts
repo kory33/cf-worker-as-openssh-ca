@@ -1,6 +1,6 @@
-import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate } from "./models";
+import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate, KeyTypes } from "./models";
 
-export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType>(
+export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends KeyTypes>(
   generator: KeyPairGenerator<KeyType>,
   store: AuthoritySSHKeyPairStore<KeyType>
 ): Promise<PublicKey<KeyType>> {
@@ -15,7 +15,7 @@ export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType>(
   }
 }
 
-export type SignedKeyPairGenerationResult<KeyType> = {
+export type SignedKeyPairGenerationResult<KeyType extends KeyTypes> = {
   __tag: 'Success',
   privateKey: PrivateKey<KeyType>,
   signedShortLivedCertificate: Certificate,
@@ -25,7 +25,11 @@ export type SignedKeyPairGenerationResult<KeyType> = {
   __tag: "EmptyPrincipals"
 }
 
-export async function generateSignedKeyPairUsingStoredCAKeyPair<Req, ClientKeyType, AuthorityKeyType>(
+export async function generateSignedKeyPairUsingStoredCAKeyPair<
+  Req,
+  ClientKeyType extends KeyTypes,
+  AuthorityKeyType extends KeyTypes
+>(
   clonedRequest: Req,
   store: AuthoritySSHKeyPairStore<AuthorityKeyType>,
   authenticator: PrincipalsAuthenticator<Req>,

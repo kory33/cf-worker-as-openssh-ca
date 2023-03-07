@@ -5,10 +5,10 @@ import { ecdsaP521Signer, ecdsaP521Generator, ecdsaP521PublicKeyToOpenSSHPublicK
 import { keyPairStoreFrom, principalsAuthenticatorFrom } from "./intra-cloudflare";
 
 export type AdaptedEntities = {
-  readonly signer: Signer<KeyTypes.ECDSA_P521>;
-  readonly keyPairGenerator: KeyPairGenerator<KeyTypes.ECDSA_P521>;
-  readonly formatter: SSHKeyPairFormatter<KeyTypes.ECDSA_P521, KeyTypes.ECDSA_P521>;
-  readonly keyPairStore: AuthoritySSHKeyPairStore<KeyTypes.ECDSA_P521>;
+  readonly signer: Signer<"ECDSA-P521">;
+  readonly keyPairGenerator: KeyPairGenerator<"ECDSA-P521">;
+  readonly formatter: SSHKeyPairFormatter<"ECDSA-P521", "ECDSA-P521">;
+  readonly keyPairStore: AuthoritySSHKeyPairStore<"ECDSA-P521">;
   readonly authenticator: PrincipalsAuthenticator<Request>;
 };
 
