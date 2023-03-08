@@ -3,16 +3,6 @@ import { principalsAuthenticatorFrom } from "./adapters/cloudflare-principals-au
 import { wasmEd25519Signer, wasmEd25519Generator, wasmEd25519PublicKeyToOpenSSHPublicKeyFormat, wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat } from "./adapters/wasm-crypto";
 import * as routes from "./routes";
 
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/index.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/index.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
 export interface Env {
   /**
    * The KV namespace in which a signing key pair should be stored.
@@ -30,8 +20,8 @@ export interface Env {
   AUTHENTICATOR_SERVICE: Fetcher;
 }
 
-// Cloudflare injects a WASM module at runtime
-import wasmModule from "signer-internal-crypto-wasm/signer_internal_crypto_bg.wasm";
+// Cloudflare injects a WASM module here at runtime
+import wasmModule from "../internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm";
 
 function adapt(env: Env): routes.AdaptedEntities<"Ed25519"> {
   return ({
