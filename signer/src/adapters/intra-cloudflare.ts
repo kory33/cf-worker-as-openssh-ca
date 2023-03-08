@@ -74,6 +74,8 @@ export const keyPairStoreFrom =
     return ({
       getStoredKeyPair: async (): Promise<KeyPair<KeyType> | null> => {
         const json = await signingKeyPairNamespace.get(StorageBridge.KEYPAIR_JSON_KEY, "json");
+        if (json === null) return null;
+
         if (StorageBridge.isPersistedJsonObjectAsExpected(json, keyType)) {
           return StorageBridge.fromPersisted(json);
         } else {
