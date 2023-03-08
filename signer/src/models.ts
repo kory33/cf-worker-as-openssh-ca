@@ -18,13 +18,22 @@ export type KeyPair<KeyType extends KeyTypes> = {
   readonly privateKey: PrivateKey<LiteralStringOrNever<KeyType>>;
 };
 
+export type Principals = string[];
+
+export type Certificate = {
+  readonly openSSHCertificateString: string;
+};
+
 export type KeyPairGenerator<KeyType extends KeyTypes> = {
   secureGenerate(): Promise<KeyPair<KeyType>>;
 };
 
-export type SSHKeyPairFormatter<AuthorityKeyType extends KeyTypes, ClientKeyType extends KeyTypes> = {
-  inOpenSSHPublicKeyFormat(publicKey: PublicKey<AuthorityKeyType>): Promise<string>;
-  inOpenSSHPrivateKeyFileFormat(keyPair: KeyPair<ClientKeyType>): Promise<string>;
+export type OpenSSHPublicKeyFormatter<KeyType extends KeyTypes> = {
+  formatPublicKeyToOpenSSH(publicKey: PublicKey<KeyType>): Promise<string>;
+}
+
+export type OpenSSHPrivateKeyFormatter<KeyType extends KeyTypes> = {
+  formatPrivateKeyToOpenSSH(keyPair: KeyPair<KeyType>): Promise<string>;
 }
 
 export type AuthoritySSHKeyPairStore<KeyType extends KeyTypes> = {
@@ -32,14 +41,8 @@ export type AuthoritySSHKeyPairStore<KeyType extends KeyTypes> = {
   store(authoritySSHKeyPair: KeyPair<KeyType>): Promise<void>;
 };
 
-export type Principals = string[];
-
 export type PrincipalsAuthenticator<Req> = {
   validPrincipalsFor(clonedRequest: Req): Promise<Principals>;
-};
-
-export type Certificate = {
-  readonly openSSHCertificateString: string;
 };
 
 export type Signer<AuthorityKeyType extends KeyTypes> = {

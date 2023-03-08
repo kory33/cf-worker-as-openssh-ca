@@ -1,15 +1,24 @@
-import { AdaptedEntities } from "./adapters";
+import { AuthoritySSHKeyPairStore, KeyPairGenerator, KeyTypes, OpenSSHPrivateKeyFormatter, OpenSSHPublicKeyFormatter, PrincipalsAuthenticator, Signer } from "./models";
 import * as services from "./services";
 
-export async function getCaPublicKey(
+export type AdaptedEntities<GlobalKeyType extends KeyTypes> = {
+  readonly signer: Signer<GlobalKeyType>;
+  readonly keyPairGenerator: KeyPairGenerator<GlobalKeyType>;
+  readonly authorityKeyFormatter: OpenSSHPublicKeyFormatter<GlobalKeyType>;
+  readonly clientKeyFormatter: OpenSSHPrivateKeyFormatter<GlobalKeyType>;
+  readonly keyPairStore: AuthoritySSHKeyPairStore<GlobalKeyType>;
+  readonly authenticator: PrincipalsAuthenticator<Request>;
+};
+
+export async function getCaPublicKey<GlobalKeyType extends KeyTypes>(
 	request: Request,
-	adapted: AdaptedEntities,
+	adapted: AdaptedEntities<GlobalKeyType>,
 	ctx: ExecutionContext
 ): Promise<Response> {
 	const publicKey = await services.ensureKeyPairIsInRepositoryAndGetPublicKey(
     adapted.keyPairGenerator, adapted.keyPairStore
   )
-  const publicKeyInSSHFormat = await adapted.formatter.inOpenSSHPublicKeyFormat(publicKey);
+  const publicKeyInSSHFormat = await adapted.authorityKeyFormatter.formatPublicKeyToOpenSSH(publicKey);
 
   return new Response(publicKeyInSSHFormat, {
     status: 200,
@@ -19,9 +28,9 @@ export async function getCaPublicKey(
   })
 }
 
-export async function postNewShortLivedCertificate(
+export async function postNewShortLivedCertificate<GlobalKeyType extends KeyTypes>(
 	request: Request,
-	adapted: AdaptedEntities,
+	adapted: AdaptedEntities<GlobalKeyType>,
 	ctx: ExecutionContext
 ): Promise<Response> {
   const generationResult = await services.generateSignedKeyPairUsingStoredCAKeyPair(
@@ -33,9 +42,8 @@ export async function postNewShortLivedCertificate(
   );
 
   if (generationResult.__tag === "Success") {
-    const inOpenSSHPrivateKeyFileFormat = await adapted.formatter.inOpenSSHPrivateKeyFileFormat(generationResult.keyPair);
     return Response.json({
-      privateKey: inOpenSSHPrivateKeyFileFormat,
+      privateKey: await adapted.clientKeyFormatter.formatPrivateKeyToOpenSSH(generationResult.keyPair),
       certificate: generationResult.caSignedShortLivedCertificate.openSSHCertificateString,
     }, {
       status: 200
@@ -49,6 +57,6 @@ export async function postNewShortLivedCertificate(
       status: 401,
     })
   } else {
-    return generationResult; // case exhausted
+    return generationResult satisfies never; // case exhausted
   }
 }

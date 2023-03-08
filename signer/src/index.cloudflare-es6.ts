@@ -1,4 +1,6 @@
-import { adapt } from "./adapters";
+import { keyPairStoreFrom } from "./adapters/cloudflare-keypair-store";
+import { principalsAuthenticatorFrom } from "./adapters/cloudflare-principals-auth";
+import { wasmEd25519Signer, wasmEd25519Generator, wasmEd25519PublicKeyToOpenSSHPublicKeyFormat, wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat } from "./adapters/wasm-crypto";
 import * as routes from "./routes";
 
 /**
@@ -26,6 +28,20 @@ export interface Env {
    * be returned.
    */
   AUTHENTICATOR_SERVICE: Fetcher;
+}
+
+// Cloudflare injects a WASM module at runtime
+import wasmModule from "signer-internal-crypto-wasm/signer_internal_crypto_bg.wasm";
+
+function adapt(env: Env): routes.AdaptedEntities<"Ed25519"> {
+  return ({
+    signer: wasmEd25519Signer(wasmModule),
+    keyPairGenerator: wasmEd25519Generator(wasmModule),
+    authorityKeyFormatter: wasmEd25519PublicKeyToOpenSSHPublicKeyFormat(wasmModule),
+    clientKeyFormatter: wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat(wasmModule),
+    keyPairStore: keyPairStoreFrom("Ed25519", env.SIGNING_KEY_PAIR_NAMESPACE),
+    authenticator: principalsAuthenticatorFrom(env.AUTHENTICATOR_SERVICE),
+  });
 }
 
 export default {

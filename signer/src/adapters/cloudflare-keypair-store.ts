@@ -1,28 +1,7 @@
-import { Fetcher, KVNamespace, Request } from "@cloudflare/workers-types";
-import { PrincipalsAuthenticator, Principals, AuthoritySSHKeyPairStore, KeyPair, KeyTypes } from "../models";
+import { KVNamespace } from "@cloudflare/workers-types";
+import { AuthoritySSHKeyPairStore, KeyPair, KeyTypes } from "../models";
 import { LiteralStringOrNever } from "../typehacks";
 import { uint8ArrayFromBase64String, base64StringFromUint8Array } from "./nodejs-base64";
-
-export const principalsAuthenticatorFrom =
-  (authenticatorService: Fetcher): PrincipalsAuthenticator<Request> => ({
-    validPrincipalsFor: async (clonedRequest: Request): Promise<Principals> => {
-      const response = await authenticatorService.fetch(clonedRequest)
-      
-      if (!response.ok) {
-        throw `Unexpected response status ${response.status} from authenticator.`
-      }
-
-      const json = await response.json<unknown>();
-      if (!Array.isArray(json)) {
-        throw "Received non-array value from authenticator.";
-      }
-
-      return json.map((x: unknown) => {
-        if (typeof x === "string") return x;
-        else throw "Received non-string value inside top-level array from authenticator.";
-      });
-    }
-  })
 
 namespace StorageBridge {
   export const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"
