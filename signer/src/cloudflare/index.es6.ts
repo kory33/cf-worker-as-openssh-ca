@@ -1,4 +1,4 @@
-import { AppEntities } from "../core/models";
+import { AppEntities, UnixTime } from "../core/models";
 import { keyPairStoreFrom } from "./adapters/cloudflare-keypair-store";
 import { principalsAuthenticatorFrom } from "./adapters/cloudflare-principals-auth";
 import { wasmEd25519Signer, wasmEd25519Generator, wasmEd25519PublicKeyToOpenSSHPublicKeyFormat, wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat } from "./adapters/cloudflare-wasm-crypto";
@@ -19,6 +19,12 @@ export interface Env {
    * be returned.
    */
   AUTHENTICATOR_SERVICE: Fetcher;
+
+  /**
+   * The duration through which the issued certificate remains valid,
+   * specified in the number of seconds. The default value is 60.
+   */
+  ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS: string | undefined;
 }
 
 // Cloudflare injects a WASM module here at runtime
@@ -48,7 +54,12 @@ export default {
     if (request.method === "GET" && url.pathname === "/ca-public-key") {
       return await routes.getCaPublicKey(adapted);
     } else if (request.method === "POST" && url.pathname === "/new-short-lived-certificate") {
-      return await routes.postNewShortLivedCertificate(request.clone(), adapted);
+      const duration: UnixTime =
+        env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS !== undefined
+          ? BigInt(env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS)
+          : 60n;
+
+      return await routes.postNewShortLivedCertificate(request.clone(), duration, adapted);
     } else {
       return new Response(null, { status: 404 });
     }

@@ -1,4 +1,4 @@
-import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, Certificate, KeyTypes, KeyPair } from "./models";
+import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, Certificate, KeyTypes, KeyPair, UnixTime } from "./models";
 
 export async function ensureKeyPairIsInRepositoryAndGetPublicKey<AuthorityKeyType extends KeyTypes>(
   generator: KeyPairGenerator<AuthorityKeyType>,
@@ -31,6 +31,7 @@ export async function generateSignedKeyPairUsingStoredCAKeyPair<
   AuthorityKeyType extends KeyTypes
 >(
   clonedRequest: Req,
+  validitySeconds: bigint,
   store: AuthoritySSHKeyPairStore<AuthorityKeyType>,
   authenticator: PrincipalsAuthenticator<Req>,
   generator: KeyPairGenerator<ClientKeyType>,
@@ -52,14 +53,14 @@ export async function generateSignedKeyPairUsingStoredCAKeyPair<
 
   const keyPair = await generator.secureGenerate();
 
-  const currentUnixTime: bigint = BigInt(Date.now() / 1000);
-  const tenMinutesLater: bigint = currentUnixTime + 60n * 10n;
+  const currentUnixTime: UnixTime = BigInt(Date.now() / 1000);
+  const validUntil: UnixTime = currentUnixTime + validitySeconds;
   const certificate = await signer.signCertificate(
     keyPair.publicKey,
     caKeyPair,
     principals,
     currentUnixTime,
-    tenMinutesLater
+    validUntil
   );
 
   return ({

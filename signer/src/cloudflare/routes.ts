@@ -1,4 +1,4 @@
-import { AppEntities, KeyTypes } from "../core/models";
+import { AppEntities, KeyTypes, UnixTime } from "../core/models";
 import * as services from "../core/services";
 
 export async function getCaPublicKey<Req, ClientKeyType extends KeyTypes, AuthorityKeyType extends KeyTypes>(
@@ -19,10 +19,12 @@ export async function getCaPublicKey<Req, ClientKeyType extends KeyTypes, Author
 
 export async function postNewShortLivedCertificate<Req, ClientKeyType extends KeyTypes, AuthorityKeyType extends KeyTypes>(
 	clonedRequest: Req,
+  validitySeconds: UnixTime,
 	entities: AppEntities<Req, ClientKeyType, AuthorityKeyType>,
 ): Promise<Response> {
   const generationResult = await services.generateSignedKeyPairUsingStoredCAKeyPair(
     clonedRequest,
+    validitySeconds,
     entities.authorityKeyPairStore,
     entities.authenticator,
     entities.clientKeyPairGenerator,

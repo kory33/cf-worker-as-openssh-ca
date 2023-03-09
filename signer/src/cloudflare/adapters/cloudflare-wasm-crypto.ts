@@ -1,4 +1,4 @@
-import { Signer, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, OpenSSHPublicKeyFormatter, OpenSSHPrivateKeyFormatter } from "../../core/models";
+import { Signer, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, OpenSSHPublicKeyFormatter, OpenSSHPrivateKeyFormatter, UnixTime } from "../../core/models";
 import * as internalWasm from "signer-internal-crypto-wasm";
 
 const fromKeyPairToWasmKeys = (keyPair: KeyPair<"Ed25519">): internalWasm.RawEd25519Keys =>
@@ -31,8 +31,8 @@ export const wasmEd25519Signer = withSharedWasmModule(() => withWebCrypto((crypt
     targetKey: PublicKey<"Ed25519">,
     authorityKeyPair: KeyPair<"Ed25519">,
     principals: Principals,
-    valid_after: bigint,
-    valid_before: bigint,
+    valid_after: UnixTime,
+    valid_before: UnixTime,
   ): Promise<Certificate> => ({
     openSSHCertificateString: internalWasm.sign_ed25519_public_key_with_ed25519_key_pair(
       crypto,

@@ -1,5 +1,7 @@
 import { LiteralStringOrNever } from "./typehacks";
 
+export type UnixTime = bigint;
+
 // We currently only handle Ed25519 keys
 export type KeyTypes = "Ed25519";
 
@@ -60,8 +62,8 @@ export type Signer<AuthorityKeyType extends KeyTypes, ClientKeyType extends KeyT
     targetKey: PublicKey<ClientKeyType>,
     authorityKeyPair: KeyPair<AuthorityKeyType>,
     principals: Principals,
-    valid_after: bigint,
-    valid_before: bigint
+    valid_after: UnixTime,
+    valid_before: UnixTime
   ): Promise<Certificate>
 };
 
