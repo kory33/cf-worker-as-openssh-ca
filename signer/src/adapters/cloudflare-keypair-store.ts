@@ -1,7 +1,6 @@
 import { KVNamespace } from "@cloudflare/workers-types";
 import { AuthoritySSHKeyPairStore, KeyPair, KeyTypes } from "../models";
 import { LiteralStringOrNever } from "../typehacks";
-import { uint8ArrayFromBase64String, base64StringFromUint8Array } from "./nodejs-base64";
 
 namespace StorageBridge {
   export const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"
@@ -28,19 +27,19 @@ namespace StorageBridge {
     return ({
       publicKey: {
         type: json.keyType,
-        raw: uint8ArrayFromBase64String(json.rawPublicKey),
+        raw: new Uint8Array(JSON.parse(json.rawPublicKey)),
       },
       privateKey: {
         type: json.keyType,
-        raw: uint8ArrayFromBase64String(json.rawPrivateKey),
+        raw: new Uint8Array(JSON.parse(json.rawPrivateKey)),
       },
     });
   }
 
   export const toPersisted = <KeyType extends KeyTypes>(authoritySSHKeyPair: KeyPair<KeyType>): PersistedJsonObject<KeyType> => ({
     keyType: authoritySSHKeyPair.publicKey.type,
-    rawPublicKey: base64StringFromUint8Array(authoritySSHKeyPair.publicKey.raw),
-    rawPrivateKey: base64StringFromUint8Array(authoritySSHKeyPair.privateKey.raw),
+    rawPublicKey: JSON.stringify(Array.from(authoritySSHKeyPair.publicKey.raw)),
+    rawPrivateKey: JSON.stringify(Array.from(authoritySSHKeyPair.privateKey.raw)),
   })
 }
 

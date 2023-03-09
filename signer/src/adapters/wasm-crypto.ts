@@ -24,7 +24,9 @@ const withSharedWasmModule = <R>(producer: () => R) => (module: WebAssembly.Modu
   return producer();
 };
 
-export const wasmEd25519Signer = withSharedWasmModule((): Signer<"Ed25519"> => ({
+const withWebCrypto = <R>(producer: (c: Crypto) => R) => (crypto: Crypto) => producer(crypto);
+
+export const wasmEd25519Signer = withSharedWasmModule(() => withWebCrypto((crypto: Crypto): Signer<"Ed25519"> => ({
   signCertificate: async <UserKeyType extends KeyTypes>(
     targetKey: PublicKey<UserKeyType>,
     authorityKeyPair: KeyPair<"Ed25519">,
@@ -33,6 +35,7 @@ export const wasmEd25519Signer = withSharedWasmModule((): Signer<"Ed25519"> => (
     valid_before: bigint,
   ): Promise<Certificate> => ({
     openSSHCertificateString: internalWasm.sign_ed25519_public_key_with_ed25519_key_pair(
+      crypto,
       targetKey.raw,
       fromKeyPairToWasmKeys(authorityKeyPair),
       principals,
@@ -40,12 +43,12 @@ export const wasmEd25519Signer = withSharedWasmModule((): Signer<"Ed25519"> => (
       valid_before
     )
   })
-}));
+})));
 
-export const wasmEd25519Generator = withSharedWasmModule((): KeyPairGenerator<"Ed25519"> => ({
+export const wasmEd25519Generator = withSharedWasmModule(() => withWebCrypto((crypto: Crypto): KeyPairGenerator<"Ed25519"> => ({
   secureGenerate: async (): Promise<KeyPair<"Ed25519">> =>
-    fromWasmKeysToKeyPair(internalWasm.ed25519_generate())
-}));
+    fromWasmKeysToKeyPair(internalWasm.ed25519_generate(crypto))
+})));
 
 export const wasmEd25519PublicKeyToOpenSSHPublicKeyFormat = withSharedWasmModule((): OpenSSHPublicKeyFormatter<"Ed25519"> => ({
   formatPublicKeyToOpenSSH: (publicKey: PublicKey<"Ed25519">): Promise<string> =>

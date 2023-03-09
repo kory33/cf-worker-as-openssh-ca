@@ -25,8 +25,8 @@ import wasmModule from "../internal-crypto-wasm/pkg/signer_internal_crypto_bg.wa
 
 function adapt(env: Env): routes.AdaptedEntities<"Ed25519"> {
   return ({
-    signer: wasmEd25519Signer(wasmModule),
-    keyPairGenerator: wasmEd25519Generator(wasmModule),
+    signer: wasmEd25519Signer(wasmModule)(crypto),
+    keyPairGenerator: wasmEd25519Generator(wasmModule)(crypto),
     authorityKeyFormatter: wasmEd25519PublicKeyToOpenSSHPublicKeyFormat(wasmModule),
     clientKeyFormatter: wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat(wasmModule),
     keyPairStore: keyPairStoreFrom("Ed25519", env.SIGNING_KEY_PAIR_NAMESPACE),
