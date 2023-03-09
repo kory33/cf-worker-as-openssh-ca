@@ -12,17 +12,19 @@
     "url": "https://github.com/kory33/cf-worker-as-ca/issues"
   },
   "homepage": "https://github.com/kory33/cf-worker-as-ca#readme",
-
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
+    "esbuild": "^0.17.11",
     "signer-internal-crypto-wasm": "file:./internal-crypto-wasm/pkg",
     "typescript": "^4.9.5",
     "vitest": "^0.29.2",
     "wrangler": "2.12.0"
   },
   "scripts": {
-    "start": "wrangler dev",
-    "deploy": "wrangler publish",
+    "build-internal-crypto-wasm": "cargo install -q wasm-pack --version 0.10.3 && cd internal-crypto-wasm && wasm-pack build --target web --release && npm install",
+    "wrangler-dev": "wrangler dev",
+    "wrangler-publish": "wrangler publish",
+    "build-service-worker": "npm run build-internal-crypto-wasm && ./build-service-worker.js",
     "test": "vitest"
   }
 }

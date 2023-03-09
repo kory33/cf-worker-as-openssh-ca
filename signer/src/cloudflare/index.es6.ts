@@ -35,7 +35,9 @@ export interface Env {
 }
 
 // Cloudflare injects a WASM module here at runtime
-import wasmModule from "signer-internal-crypto-wasm/signer_internal_crypto_bg.wasm";
+// We need to directly reference the .wasm file because
+//   wrangler-module-controller does not pick this up from node_modules...
+import wasmModule from "../../internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm";
 
 function adapt(env: Env): AppEntities<Request, "Ed25519", "Ed25519"> {
   return ({
