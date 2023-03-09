@@ -2,7 +2,7 @@ import { AuthoritySSHKeyPairStore, KeyPairGenerator, KeyTypes, OpenSSHPrivateKey
 import * as services from "./services";
 
 export type AdaptedEntities<GlobalKeyType extends KeyTypes> = {
-  readonly signer: Signer<GlobalKeyType>;
+  readonly signer: Signer<GlobalKeyType, GlobalKeyType>;
   readonly keyPairGenerator: KeyPairGenerator<GlobalKeyType>;
   readonly authorityKeyFormatter: OpenSSHPublicKeyFormatter<GlobalKeyType>;
   readonly clientKeyFormatter: OpenSSHPrivateKeyFormatter<GlobalKeyType>;

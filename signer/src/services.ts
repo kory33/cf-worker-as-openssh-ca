@@ -34,7 +34,7 @@ export async function generateSignedKeyPairUsingStoredCAKeyPair<
   store: AuthoritySSHKeyPairStore<AuthorityKeyType>,
   authenticator: PrincipalsAuthenticator<Req>,
   generator: KeyPairGenerator<ClientKeyType>,
-  signer: Signer<AuthorityKeyType>
+  signer: Signer<AuthorityKeyType, ClientKeyType>
 ): Promise<SignedKeyPairGenerationResult<ClientKeyType>> {
   const caKeyPair = await store.getStoredKeyPair();
   if (caKeyPair === null) {

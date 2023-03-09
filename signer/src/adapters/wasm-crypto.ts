@@ -26,9 +26,9 @@ const withSharedWasmModule = <R>(producer: () => R) => (module: WebAssembly.Modu
 
 const withWebCrypto = <R>(producer: (c: Crypto) => R) => (crypto: Crypto) => producer(crypto);
 
-export const wasmEd25519Signer = withSharedWasmModule(() => withWebCrypto((crypto: Crypto): Signer<"Ed25519"> => ({
-  signCertificate: async <UserKeyType extends KeyTypes>(
-    targetKey: PublicKey<UserKeyType>,
+export const wasmEd25519Signer = withSharedWasmModule(() => withWebCrypto((crypto: Crypto): Signer<"Ed25519", "Ed25519"> => ({
+  signCertificate: async(
+    targetKey: PublicKey<"Ed25519">,
     authorityKeyPair: KeyPair<"Ed25519">,
     principals: Principals,
     valid_after: bigint,
