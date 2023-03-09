@@ -1,5 +1,6 @@
 use std::convert::{TryFrom, TryInto};
 
+use console_error_panic_hook;
 use js_sys::JsString;
 use ssh_key::{
     certificate::{self, CertType},
@@ -17,6 +18,8 @@ use exported_types::RawEd25519Keys;
 
 #[wasm_bindgen]
 pub fn ed25519_key_pair_to_openssh_pem_private_key(raw_keys: &RawEd25519Keys) -> String {
+    console_error_panic_hook::set_once();
+
     let key_pair: Ed25519Keypair = raw_keys.try_into().unwrap();
 
     PrivateKey::new(key_pair.into(), "")
@@ -28,11 +31,15 @@ pub fn ed25519_key_pair_to_openssh_pem_private_key(raw_keys: &RawEd25519Keys) ->
 
 #[wasm_bindgen]
 pub fn ed25519_generate(web_crypto: web_sys::Crypto) -> RawEd25519Keys {
+    console_error_panic_hook::set_once();
+
     Ed25519Keypair::random(WebCryptoBasedRng(web_crypto)).into()
 }
 
 #[wasm_bindgen]
 pub fn ed25519_public_key_to_openssh_public_key_format(raw_ed25519_key: &[u8]) -> String {
+    console_error_panic_hook::set_once();
+
     let public_key_data: KeyData = Ed25519PublicKey::try_from(raw_ed25519_key).unwrap().into();
 
     // we will not include any comment in the generated OpenSSH public key
@@ -52,6 +59,8 @@ pub fn sign_ed25519_public_key_with_ed25519_key_pair(
     valid_after: u64,
     valid_before: u64,
 ) -> String {
+    console_error_panic_hook::set_once();
+
     let principals: Vec<String> = principals
         .iter()
         .map(|v| String::from(v.dyn_ref::<JsString>().unwrap()))
