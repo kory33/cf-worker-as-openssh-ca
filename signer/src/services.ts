@@ -1,4 +1,4 @@
-import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, PrivateKey, Certificate, KeyTypes, KeyPair } from "./models";
+import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, Certificate, KeyTypes, KeyPair } from "./models";
 
 export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends KeyTypes>(
   generator: KeyPairGenerator<KeyType>,

@@ -1,4 +1,4 @@
-import { Signer, KeyTypes, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, PrivateKey, OpenSSHPublicKeyFormatter, OpenSSHPrivateKeyFormatter } from "../models";
+import { Signer, KeyTypes, PublicKey, KeyPair, Principals, Certificate, KeyPairGenerator, OpenSSHPublicKeyFormatter, OpenSSHPrivateKeyFormatter } from "../models";
 import * as internalWasm from "signer-internal-crypto-wasm";
 
 const fromKeyPairToWasmKeys = (keyPair: KeyPair<"Ed25519">): internalWasm.RawEd25519Keys =>

@@ -47,25 +47,22 @@ export const keyPairStoreFrom =
   <KeyType extends KeyTypes>(
     keyType: LiteralStringOrNever<KeyType>,
     signingKeyPairNamespace: KVNamespace
-  ): AuthoritySSHKeyPairStore<KeyType> => {
+  ): AuthoritySSHKeyPairStore<KeyType> => ({
+    getStoredKeyPair: async (): Promise<KeyPair<KeyType> | null> => {
+      const json = await signingKeyPairNamespace.get(StorageBridge.KEYPAIR_JSON_KEY, "json");
+      if (json === null) return null;
 
-    return ({
-      getStoredKeyPair: async (): Promise<KeyPair<KeyType> | null> => {
-        const json = await signingKeyPairNamespace.get(StorageBridge.KEYPAIR_JSON_KEY, "json");
-        if (json === null) return null;
+      if (StorageBridge.isPersistedJsonObjectAsExpected(json, keyType)) {
+        return StorageBridge.fromPersisted(json);
+      } else {
+        throw `Value found at ${StorageBridge.KEYPAIR_JSON_KEY} does not conform to predefined schema`;
+      }
+    },
 
-        if (StorageBridge.isPersistedJsonObjectAsExpected(json, keyType)) {
-          return StorageBridge.fromPersisted(json);
-        } else {
-          throw `Value found at ${StorageBridge.KEYPAIR_JSON_KEY} does not conform to predefined schema`;
-        }
-      },
-
-      store: async (authoritySSHKeyPair: KeyPair<KeyType>): Promise<void> => {
-        await signingKeyPairNamespace.put(
-          StorageBridge.KEYPAIR_JSON_KEY,
-          JSON.stringify(StorageBridge.toPersisted(authoritySSHKeyPair))
-        )
-      },
-    })
-  }
+    store: async (authoritySSHKeyPair: KeyPair<KeyType>): Promise<void> => {
+      await signingKeyPairNamespace.put(
+        StorageBridge.KEYPAIR_JSON_KEY,
+        JSON.stringify(StorageBridge.toPersisted(authoritySSHKeyPair))
+      )
+    },
+  })

@@ -3,4 +3,6 @@ main = "src/index.cloudflare-es6.ts"
 compatibility_date = "2023-03-04"
 
 [build]
+# We need to produce a npm package at internal-crypto-wasm/pkg containing a WASM glue and a WASM module,
+# and then wrangler can bundle everything (into an es6 module) starting at src/index.cloudflare-es6.ts.
 command = "cargo install -q wasm-pack --version 0.10.3 && cd internal-crypto-wasm && wasm-pack build --target web --release"
