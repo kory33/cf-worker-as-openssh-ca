@@ -64,3 +64,13 @@ export type Signer<AuthorityKeyType extends KeyTypes, ClientKeyType extends KeyT
     valid_before: bigint
   ): Promise<Certificate>
 };
+
+export type AppEntities<Req, AuthorityKeyType extends KeyTypes, ClientKeyType extends KeyTypes> = {
+  readonly signer: Signer<AuthorityKeyType, ClientKeyType>;
+  readonly authorityKeyPairGenerator: KeyPairGenerator<AuthorityKeyType>;
+  readonly clientKeyPairGenerator: KeyPairGenerator<ClientKeyType>;
+  readonly authorityKeyFormatter: OpenSSHPublicKeyFormatter<AuthorityKeyType>;
+  readonly clientKeyFormatter: OpenSSHPrivateKeyFormatter<ClientKeyType>;
+  readonly authorityKeyPairStore: AuthoritySSHKeyPairStore<AuthorityKeyType>;
+  readonly authenticator: PrincipalsAuthenticator<Req>;
+};

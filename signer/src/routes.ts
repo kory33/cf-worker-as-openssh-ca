@@ -1,24 +1,13 @@
-import { AuthoritySSHKeyPairStore, KeyPairGenerator, KeyTypes, OpenSSHPrivateKeyFormatter, OpenSSHPublicKeyFormatter, PrincipalsAuthenticator, Signer } from "./models";
+import { AppEntities, KeyTypes } from "./models";
 import * as services from "./services";
 
-export type AdaptedEntities<GlobalKeyType extends KeyTypes> = {
-  readonly signer: Signer<GlobalKeyType, GlobalKeyType>;
-  readonly keyPairGenerator: KeyPairGenerator<GlobalKeyType>;
-  readonly authorityKeyFormatter: OpenSSHPublicKeyFormatter<GlobalKeyType>;
-  readonly clientKeyFormatter: OpenSSHPrivateKeyFormatter<GlobalKeyType>;
-  readonly keyPairStore: AuthoritySSHKeyPairStore<GlobalKeyType>;
-  readonly authenticator: PrincipalsAuthenticator<Request>;
-};
-
-export async function getCaPublicKey<GlobalKeyType extends KeyTypes>(
-	request: Request,
-	adapted: AdaptedEntities<GlobalKeyType>,
-	ctx: ExecutionContext
+export async function getCaPublicKey<Req, ClientKeyType extends KeyTypes, AuthorityKeyType extends KeyTypes>(
+	entities: AppEntities<Req, ClientKeyType, AuthorityKeyType>,
 ): Promise<Response> {
 	const publicKey = await services.ensureKeyPairIsInRepositoryAndGetPublicKey(
-    adapted.keyPairGenerator, adapted.keyPairStore
+    entities.authorityKeyPairGenerator, entities.authorityKeyPairStore
   )
-  const publicKeyInSSHFormat = await adapted.authorityKeyFormatter.formatPublicKeyToOpenSSH(publicKey);
+  const publicKeyInSSHFormat = await entities.authorityKeyFormatter.formatPublicKeyToOpenSSH(publicKey);
 
   return new Response(publicKeyInSSHFormat, {
     status: 200,
@@ -28,22 +17,21 @@ export async function getCaPublicKey<GlobalKeyType extends KeyTypes>(
   })
 }
 
-export async function postNewShortLivedCertificate<GlobalKeyType extends KeyTypes>(
-	request: Request,
-	adapted: AdaptedEntities<GlobalKeyType>,
-	ctx: ExecutionContext
+export async function postNewShortLivedCertificate<Req, ClientKeyType extends KeyTypes, AuthorityKeyType extends KeyTypes>(
+	clonedRequest: Req,
+	entities: AppEntities<Req, ClientKeyType, AuthorityKeyType>,
 ): Promise<Response> {
   const generationResult = await services.generateSignedKeyPairUsingStoredCAKeyPair(
-    request.clone(),
-    adapted.keyPairStore,
-    adapted.authenticator,
-    adapted.keyPairGenerator,
-    adapted.signer
+    clonedRequest,
+    entities.authorityKeyPairStore,
+    entities.authenticator,
+    entities.clientKeyPairGenerator,
+    entities.signer
   );
 
   if (generationResult.__tag === "Success") {
     return Response.json({
-      privateKey: await adapted.clientKeyFormatter.formatPrivateKeyToOpenSSH(generationResult.keyPair),
+      privateKey: await entities.clientKeyFormatter.formatPrivateKeyToOpenSSH(generationResult.keyPair),
       certificate: generationResult.caSignedShortLivedCertificate.openSSHCertificateString,
     }, {
       status: 200

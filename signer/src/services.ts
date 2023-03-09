@@ -1,9 +1,9 @@
 import { KeyPairGenerator, AuthoritySSHKeyPairStore, PublicKey, PrincipalsAuthenticator, Signer, Certificate, KeyTypes, KeyPair } from "./models";
 
-export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends KeyTypes>(
-  generator: KeyPairGenerator<KeyType>,
-  store: AuthoritySSHKeyPairStore<KeyType>
-): Promise<PublicKey<KeyType>> {
+export async function ensureKeyPairIsInRepositoryAndGetPublicKey<AuthorityKeyType extends KeyTypes>(
+  generator: KeyPairGenerator<AuthorityKeyType>,
+  store: AuthoritySSHKeyPairStore<AuthorityKeyType>
+): Promise<PublicKey<AuthorityKeyType>> {
   const currentKeyPair = await store.getStoredKeyPair();
 
   if (currentKeyPair === null) {
@@ -15,9 +15,9 @@ export async function ensureKeyPairIsInRepositoryAndGetPublicKey<KeyType extends
   }
 }
 
-export type SignedKeyPairGenerationResult<KeyType extends KeyTypes> = {
+export type SignedKeyPairGenerationResult<ClientKeyType extends KeyTypes> = {
   __tag: 'Success',
-  keyPair: KeyPair<KeyType>,
+  keyPair: KeyPair<ClientKeyType>,
   caSignedShortLivedCertificate: Certificate,
 } | {
   __tag: "NoCAKeyPair"
