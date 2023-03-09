@@ -1,5 +1,5 @@
 name = "signer"
-main = "src/cloudflare/index.cloudflare-es6.ts"
+main = "src/cloudflare/index.es6.ts"
 compatibility_date = "2023-03-04"
 
 [build]
