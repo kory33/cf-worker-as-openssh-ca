@@ -1,3 +1,6 @@
 name = "signer"
 main = "src/index.cloudflare-es6.ts"
 compatibility_date = "2023-03-04"
+
+[build]
+command = "cargo install -q wasm-pack --version 0.10.3 && cd internal-crypto-wasm && wasm-pack build --target web --release"
