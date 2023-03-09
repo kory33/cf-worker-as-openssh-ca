@@ -14,7 +14,7 @@ ssh-key = { version = "0.5.1", features = ["alloc", "ed25519"] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`.
-console_error_panic_hook = { version = "0.1.6" }
+console_error_panic_hook = { version = "0.1.7" }
 
 js-sys = "0.3.61"
 
