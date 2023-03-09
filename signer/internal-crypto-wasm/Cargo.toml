@@ -28,8 +28,8 @@ wee_alloc = { version = "0.4.5", optional = true }
 
 js-sys = "0.3.61"
 
-# We need Crypto feature for key generation.
-web-sys = { version = "0.3.61", features = ["Window", "Crypto"] }
+# We need Crypto feature for key generation (the actual Crypto object needs to be given as a function argument).
+web-sys = { version = "0.3.61", features = ["Crypto"] }
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

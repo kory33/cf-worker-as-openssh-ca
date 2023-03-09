@@ -27,9 +27,8 @@ pub fn ed25519_key_pair_to_openssh_pem_private_key(raw_keys: &RawEd25519Keys) ->
 }
 
 #[wasm_bindgen]
-pub fn ed25519_generate() -> RawEd25519Keys {
-    let window_crypto = web_sys::window().unwrap().crypto().unwrap();
-    Ed25519Keypair::random(WebCryptoBasedRng(window_crypto)).into()
+pub fn ed25519_generate(web_crypto: web_sys::Crypto) -> RawEd25519Keys {
+    Ed25519Keypair::random(WebCryptoBasedRng(web_crypto)).into()
 }
 
 #[wasm_bindgen]
@@ -46,14 +45,13 @@ pub fn ed25519_public_key_to_openssh_public_key_format(raw_ed25519_key: &[u8]) -
 
 #[wasm_bindgen]
 pub fn sign_ed25519_public_key_with_ed25519_key_pair(
+    web_crypto: web_sys::Crypto,
     raw_public_key_to_be_signed: &[u8],
     signer_key: &RawEd25519Keys,
     principals: Vec<JsValue>, // must be nonempty string[] or panics
     valid_after: u64,
     valid_before: u64,
 ) -> String {
-    let window_crypto = web_sys::window().unwrap().crypto().unwrap();
-
     let principals: Vec<String> = principals
         .iter()
         .map(|v| String::from(v.dyn_ref::<JsString>().unwrap()))
@@ -71,7 +69,7 @@ pub fn sign_ed25519_public_key_with_ed25519_key_pair(
     let private_key = PrivateKey::new(KeypairData::Ed25519(key_pair), "").unwrap();
 
     let mut builder = certificate::Builder::new_with_random_nonce(
-        WebCryptoBasedRng(window_crypto),
+        WebCryptoBasedRng(web_crypto),
         public_key_to_be_signed,
         valid_after,
         valid_before,
