@@ -1,6 +1,6 @@
 import { KVNamespace } from "@cloudflare/workers-types";
-import { AuthoritySSHKeyPairStore, KeyPair, KeyTypes } from "../models";
-import { LiteralStringOrNever } from "../typehacks";
+import { AuthoritySSHKeyPairStore, KeyPair, KeyTypes } from "../../core/models";
+import { LiteralStringOrNever } from "../../core/typehacks";
 
 namespace StorageBridge {
   export const KEYPAIR_JSON_KEY = "SIGNING_KEY_PAIR_JSON"

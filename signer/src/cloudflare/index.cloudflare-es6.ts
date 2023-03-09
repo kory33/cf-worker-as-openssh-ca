@@ -1,7 +1,7 @@
-import { AppEntities } from "./models";
+import { AppEntities } from "../core/models";
 import { keyPairStoreFrom } from "./adapters/cloudflare-keypair-store";
 import { principalsAuthenticatorFrom } from "./adapters/cloudflare-principals-auth";
-import { wasmEd25519Signer, wasmEd25519Generator, wasmEd25519PublicKeyToOpenSSHPublicKeyFormat, wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat } from "./adapters/wasm-crypto";
+import { wasmEd25519Signer, wasmEd25519Generator, wasmEd25519PublicKeyToOpenSSHPublicKeyFormat, wasmEd25519KeyPairToOpenSSHPrivateKeyFileFormat } from "./adapters/cloudflare-wasm-crypto";
 import * as routes from "./routes";
 
 export interface Env {
@@ -22,7 +22,7 @@ export interface Env {
 }
 
 // Cloudflare injects a WASM module here at runtime
-import wasmModule from "../internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm";
+import wasmModule from "../../internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm";
 
 function adapt(env: Env): AppEntities<Request, "Ed25519", "Ed25519"> {
   return ({

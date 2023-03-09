@@ -1,5 +1,5 @@
-import { AppEntities, KeyTypes } from "./models";
-import * as services from "./services";
+import { AppEntities, KeyTypes } from "../core/models";
+import * as services from "../core/services";
 
 export async function getCaPublicKey<Req, ClientKeyType extends KeyTypes, AuthorityKeyType extends KeyTypes>(
 	entities: AppEntities<Req, ClientKeyType, AuthorityKeyType>,

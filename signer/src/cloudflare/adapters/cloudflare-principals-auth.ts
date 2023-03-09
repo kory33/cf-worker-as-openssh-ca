@@ -1,4 +1,4 @@
-import { PrincipalsAuthenticator, Principals } from "../models";
+import { PrincipalsAuthenticator, Principals } from "../../core/models";
 
 export const principalsAuthenticatorFrom =
   (authenticatorService: Fetcher): PrincipalsAuthenticator<Request> => ({
