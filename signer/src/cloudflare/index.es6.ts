@@ -1,3 +1,10 @@
+/**
+ * The signer Worker in Module Worker format.
+ * See the following resources for how the format functions.
+ *  - https://developers.cloudflare.com/workers/learning/service-worker/
+ *  - https://blog.cloudflare.com/workers-javascript-modules/
+ */
+
 import { AppEntities, UnixTime } from "../core/models";
 import { keyPairStoreFrom } from "./adapters/cloudflare-keypair-store";
 import { principalsAuthenticatorFrom } from "./adapters/cloudflare-principals-auth";
@@ -42,6 +49,11 @@ function adapt(env: Env): AppEntities<Request, "Ed25519", "Ed25519"> {
   });
 }
 
+const issuedCertificateValidityInSeconds = (env: Env): UnixTime =>
+  env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS !== undefined
+    ? BigInt(env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS)
+    : 60n;
+
 export default {
   async fetch(
     request: Request,
@@ -54,12 +66,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/ca-public-key") {
       return await routes.getCaPublicKey(adapted);
     } else if (request.method === "POST" && url.pathname === "/new-short-lived-certificate") {
-      const duration: UnixTime =
-        env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS !== undefined
-          ? BigInt(env.ISSUED_CERTIFICATE_VALIDITY_IN_SECONDS)
-          : 60n;
-
-      return await routes.postNewShortLivedCertificate(request.clone(), duration, adapted);
+      return await routes.postNewShortLivedCertificate(request.clone(), issuedCertificateValidityInSeconds(env), adapted);
     } else {
       return new Response(null, { status: 404 });
     }
