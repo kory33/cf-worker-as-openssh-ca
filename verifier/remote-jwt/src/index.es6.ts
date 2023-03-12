@@ -1,4 +1,3 @@
-import { ExecutionContext, Request, Response } from "@cloudflare/workers-types/index";
 import * as jose from "jose";
 import * as Eta from "eta";
 
