@@ -9,12 +9,13 @@ esbuild
     entryPoints: ["src/cloudflare/index.service.ts"],
     bundle: true,
     minify: true,
-    outfile: "dest/index.min.js",
+    outfile: "dest/service-worker/index.service.js",
+  })
+  .then(() => {
+    fs.copyFile(
+      "internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm",
+      "dest/service-worker/signer_internal_crypto_bg.wasm",
+      () => {}
+    )
   })
   .catch(() => process.exit(1));
-
-fs.copyFile(
-  "internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm",
-  "dest/signer_internal_crypto_bg.wasm",
-  () => {}
-)
