@@ -33,7 +33,7 @@ jobs:
         run: |
           tag_version=$(echo "$REF" | sed "s%refs/tags/signer-v%%")
           declared_version=$(jq .version package.json --raw-output)
-          if [ "$tag_version" = "$declared_version" ]; then
+          if [ "$tag_version" != "$declared_version" ]; then
             exit 1
           fi
         env:
