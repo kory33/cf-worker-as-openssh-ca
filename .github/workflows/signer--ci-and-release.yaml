@@ -44,5 +44,5 @@ jobs:
         with:
           files: |
             signer/dest/es6/index.es6.js
-            signer/dest/service-worker/index.min.js
+            signer/dest/service-worker/index.service.js
             signer/dest/service-worker/signer_internal_crypto_bg.wasm
