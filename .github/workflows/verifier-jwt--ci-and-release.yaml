@@ -1,0 +1,45 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - verifier-remote-jwt-v*
+
+permissions:
+  contents: write
+
+jobs:
+  ci-and-release-on-tag:
+    name: Build (and release if tag was pushed)
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: "verifier/remote-jwt"
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Build and test"
+        run: |
+          npm install
+          npx wrangler publish --dry-run --outdir dest/es6
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        if: startsWith(github.ref, 'refs/tags/verifier-remote-jwt-v')
+        with:
+          packages: jq
+          version: 1.0
+      - name: "Check tag version match"
+        if: startsWith(github.ref, 'refs/tags/verifier-remote-jwt-v')
+        run: |
+          tag_version=$(echo "$REF" | sed "s%refs/tags/verifier-remote-jwt-v%%")
+          declared_version=$(jq .version package.json --raw-output)
+          if [ "$tag_version" != "$declared_version" ]; then
+            exit 1
+          fi
+        env:
+          REF: ${{ github.ref }}
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/verifier-remote-jwt-v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            verifier/remote-jwt/dest/es6/index.es6.js
