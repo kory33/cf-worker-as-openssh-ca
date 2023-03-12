@@ -1,3 +1,3 @@
-name = "verifier-remote-jwt"
+name = "authenticator-remote-jwt"
 main = "src/index.es6.ts"
 compatibility_date = "2023-03-04"

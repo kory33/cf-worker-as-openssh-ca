@@ -1,5 +1,5 @@
 {
-  "name": "verifier-remote-jwt",
+  "name": "authenticator-remote-jwt",
   "version": "0.1.0",
   "description": "Turning Cloudflare Workers into a Certificate Authority that verifies JWTs and issues short-lived certificates.",
   "repository": {
