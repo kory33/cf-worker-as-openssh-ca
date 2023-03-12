@@ -16,18 +16,16 @@ The following sequence diagrams illustrate how the Signer, the Authenticator (wh
 sequenceDiagram
     participant EC as End-Client
 
-    box Cloudflare Workers
-        participant S as Signer
-        participant WKV as Workers KV
-    end
+    participant S as Signer
+    participant WKV as Workers KV
 
     EC->>+S: /GET ca-public-key
-      S->>+WKV: Fetch keypair
-      WKV->>-S: keypair
-      opt no keypair present
-        S-->>S: Generate keypair
-        S->>WKV: Write keypair
-      end
+        S->>+WKV: Fetch keypair
+        WKV->>-S: keypair
+        opt no keypair present
+            S-->>S: Generate keypair
+            S->>WKV: Write keypair
+        end
     S->>-EC: public key (OpenSSH format)
 ```
 
@@ -38,11 +36,9 @@ sequenceDiagram
     participant EC as End-Client
     participant JI as JWT Issuer
 
-    box Cloudflare Workers
-        participant S as Signer<br>(Worker)
-        participant A as Authenticator<br>(Worker)
-        participant WKV as Workers KV
-    end
+    participant S as Signer<br>(Worker)
+    participant A as Authenticator<br>(Worker)
+    participant WKV as Workers KV
 
     JI->>EC: Issue <JWT> signed using <br> Issuer's private key
 
