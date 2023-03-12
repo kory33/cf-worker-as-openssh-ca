@@ -8,7 +8,7 @@ esbuild
     logLevel: "info",
     entryPoints: ["src/cloudflare/index.service.ts"],
     bundle: true,
-    minify: true,
+    minify: false,
     outfile: "dest/service-worker/index.service.js",
   })
   .then(() => {
