@@ -21,6 +21,8 @@ jobs:
         run: |
           npm install
           npm run build-service-worker
+
+          # not published, but build nevertheless
           npx wrangler publish --dry-run --outdir dest/es6
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
@@ -43,6 +45,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            signer/dest/es6/index.es6.js
             signer/dest/service-worker/index.service.js
             signer/dest/service-worker/signer_internal_crypto_bg.wasm
