@@ -43,6 +43,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dest/es6/index.es6.js
-            dest/service-worker/index.min.js
-            dest/service-worker/signer_internal_crypto_bg.wasm
+            signer/dest/es6/index.es6.js
+            signer/dest/service-worker/index.min.js
+            signer/dest/service-worker/signer_internal_crypto_bg.wasm
