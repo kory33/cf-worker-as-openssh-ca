@@ -43,7 +43,7 @@ jobs:
       - name: Convert .wasm to .base64-wasm.txt
         run: |
           cat internal-crypto-wasm/pkg/signer_internal_crypto_bg.wasm \
-            | base64 --wrap 0
+            | base64 --wrap 0 \
             > dest/service-worker/signer_internal_crypto_bg.wasm-base64.txt
       - name: Release
         if: startsWith(github.ref, 'refs/tags/signer-v')
