@@ -22,7 +22,6 @@
     "build-service-worker": "./build-service-worker.js"
   },
   "dependencies": {
-    "eta": "^2.0.1",
     "jose": "^4.13.1"
   }
 }

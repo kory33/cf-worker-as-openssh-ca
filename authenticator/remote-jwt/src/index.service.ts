@@ -1,13 +1,16 @@
-import { AppParameters, handleAllRequests } from "./route";
+import { appParametersFrom } from "./app-params";
+import { handleAllRequests } from "./route";
 
 declare const JWKS_DISTRIBUTION_URL: string;
-declare const ETA_TEMPLATE_FOR_PRINCIPALS: string;
+declare const JWT_CLAIM_EXPECTATION_JSON: string;
+declare const PRINCIPAL_NAME_TO_AUTHORIZE: string;
 
-const parameters: AppParameters = {
-  jwksDistributionUrl: JWKS_DISTRIBUTION_URL,
-  etaTemplateForPrincipals: ETA_TEMPLATE_FOR_PRINCIPALS,
-}
+const appParameters = appParametersFrom(
+  JWKS_DISTRIBUTION_URL,
+  JWT_CLAIM_EXPECTATION_JSON,
+  PRINCIPAL_NAME_TO_AUTHORIZE
+);
 
 addEventListener("fetch", event => {
-  event.respondWith(handleAllRequests(event.request, parameters))
+  event.respondWith(handleAllRequests(event.request, appParameters))
 });

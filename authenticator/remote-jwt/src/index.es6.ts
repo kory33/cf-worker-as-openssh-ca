@@ -1,23 +1,18 @@
-import { AppParameters, handleAllRequests } from "./route";
+import { AppParameters, appParametersFrom } from "./app-params";
+import { handleAllRequests } from "./route";
 
 export interface Env {
 	// Environment variables
-
-	/** The URL at which the public key of the signer is distributed */
 	readonly JWKS_DISTRIBUTION_URL: string | undefined;
-
-	/**
-	 * The Eta template string that produces
-	 * a comma-separated nonempty list of principal strings
-	 * when run on the JWT claim
-	 */
-	readonly ETA_TEMPLATE_FOR_PRINCIPALS: string | undefined;
+	readonly JWT_CLAIM_EXPECTATION_JSON: string | undefined;
+	readonly PRINCIPAL_NAME_TO_AUTHORIZE: string | undefined;
 }
 
-const toAppParams = (env: Env): AppParameters => ({
-	jwksDistributionUrl: env.JWKS_DISTRIBUTION_URL,
-	etaTemplateForPrincipals: env.ETA_TEMPLATE_FOR_PRINCIPALS,
-});
+const toAppParams = (env: Env): AppParameters => appParametersFrom(
+	env.JWKS_DISTRIBUTION_URL,
+	env.JWT_CLAIM_EXPECTATION_JSON,
+	env.PRINCIPAL_NAME_TO_AUTHORIZE
+);
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
