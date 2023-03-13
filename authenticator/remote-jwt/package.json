@@ -14,10 +14,13 @@
   "homepage": "https://github.com/kory33/cf-worker-as-ca#readme",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
+    "esbuild": "^0.17.11",
     "typescript": "^4.9.5",
     "wrangler": "2.12.2"
   },
-  "scripts": {},
+  "scripts": {
+    "build-service-worker": "./build-service-worker.js"
+  },
   "dependencies": {
     "eta": "^2.0.1",
     "jose": "^4.13.1"
