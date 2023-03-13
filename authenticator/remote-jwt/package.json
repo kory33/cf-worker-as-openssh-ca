@@ -1,6 +1,6 @@
 {
   "name": "authenticator-remote-jwt",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Turning Cloudflare Workers into a Certificate Authority that verifies JWTs and issues short-lived certificates.",
   "repository": {
     "type": "git",
