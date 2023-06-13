@@ -14,7 +14,7 @@
   "homepage": "https://github.com/kory33/cf-worker-as-ca#readme",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",
-    "esbuild": "^0.17.11",
+    "esbuild": "^0.18.0",
     "typescript": "^5.0.0",
     "wrangler": "3.1.0"
   },
