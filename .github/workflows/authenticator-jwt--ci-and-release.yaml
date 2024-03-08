@@ -40,7 +40,7 @@ jobs:
           REF: ${{ github.ref }}
       - name: Release
         if: startsWith(github.ref, 'refs/tags/authenticator-remote-jwt-v')
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             authenticator/remote-jwt/dest/es6/index.es6.js

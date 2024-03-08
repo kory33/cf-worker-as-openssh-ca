@@ -47,7 +47,7 @@ jobs:
             > dest/service-worker/signer_internal_crypto_bg.wasm-base64.txt
       - name: Release
         if: startsWith(github.ref, 'refs/tags/signer-v')
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             signer/dest/service-worker/index.service.js
