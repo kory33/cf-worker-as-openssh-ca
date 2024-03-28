@@ -22,6 +22,6 @@
     "build-service-worker": "./build-service-worker.js"
   },
   "dependencies": {
-    "jose": "^4.13.1"
+    "jose": "^5.0.0"
   }
 }
