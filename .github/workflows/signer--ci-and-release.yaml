@@ -4,6 +4,7 @@ on:
       - main
     tags:
       - signer-v*
+  pull_request:
 
 permissions:
   contents: write

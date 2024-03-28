@@ -4,6 +4,7 @@ on:
       - main
     tags:
       - authenticator-remote-jwt-v*
+  pull_request:
 
 permissions:
   contents: write
