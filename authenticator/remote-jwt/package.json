@@ -16,7 +16,7 @@
     "@cloudflare/workers-types": "^4.20230228.0",
     "esbuild": "^0.20.0",
     "typescript": "^5.0.0",
-    "wrangler": "3.60.1"
+    "wrangler": "3.60.2"
   },
   "scripts": {
     "build-service-worker": "./build-service-worker.js"
