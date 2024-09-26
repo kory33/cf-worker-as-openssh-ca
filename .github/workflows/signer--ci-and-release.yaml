@@ -12,7 +12,7 @@ permissions:
 jobs:
   ci-and-release-on-tag:
     name: Build (and release if tag was pushed)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: "signer"
