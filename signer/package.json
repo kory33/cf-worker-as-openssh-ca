@@ -18,7 +18,7 @@
     "signer-internal-crypto-wasm": "file:./internal-crypto-wasm/pkg",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
-    "wrangler": "3.105.1"
+    "wrangler": "3.106.0"
   },
   "scripts": {
     "build-internal-crypto-wasm": "cargo install -q wasm-pack --version 0.10.3 && cd internal-crypto-wasm && wasm-pack build --target web --release && npm install",
